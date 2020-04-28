@@ -30,6 +30,9 @@ public class Cache {
 		}
 
 		// initializes the LRU U-bit array if necessary
+		// each index in the LRU array will hold a 0 or 1 to represent that 
+		// line 0 of 1 is the least recently used line in the pair and therefore
+		// should be the replaced line.
 		if (this.replacementPolicy == 2) {
 			LRU = new ArrayList<Integer>((number_of_sets * associativity) / 2);
 		}
