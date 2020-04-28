@@ -69,17 +69,17 @@ public class Cache {
 }
 
 class Line {
-	private boolean valid;
+	private int valid;
 	private int tag;
 	private ArrayList<Byte> block;
 
 	public Line (int blockSize) {
-		valid = false;
+		valid = 0;
 		tag = 0;
 		this.block = new ArrayList<Byte>(blockSize);
 	}
 
-	public boolean getValid() {
+	public int getValid() {
 		return this.valid;
 	}
 
@@ -87,7 +87,7 @@ class Line {
 		return this.tag;
 	}
 
-	public void setValid(boolean v) {
+	public void setValid(int v) {
 		this.valid = v;
 	}
 
