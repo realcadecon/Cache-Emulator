@@ -3,7 +3,7 @@ import java.util.ArrayList;
 public class Cache {
 	
 	private int cacheSize, dataBlockSize, associativity, replacementPolicy, writePolicy, missPolicy;
-	public ArrayList<ArrayList<Line>> data;
+	private ArrayList<ArrayList<Line>> data;
 
 	public Cache(int cacheSize, int dataBlockSize, int associativity, int replacementPolicy, 
 			int writePolicy, int missPolicy) {
