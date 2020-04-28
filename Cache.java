@@ -4,6 +4,7 @@ public class Cache {
 	
 	private int cacheSize, dataBlockSize, associativity, replacementPolicy, writePolicy, missPolicy;
 	private ArrayList<ArrayList<Line>> data;
+	private ArrayList<Integer> LRU; // Holds the U-bits for LRU-replacement policy
 
 	public Cache(int cacheSize, int dataBlockSize, int associativity, int replacementPolicy, 
 			int writePolicy, int missPolicy) {
@@ -18,6 +19,7 @@ public class Cache {
 		int number_of_sets = this.cacheSize / (this.associativity * this.dataBlockSize);
 		this.data = new ArrayList<ArrayList<Line>>(0);
 
+		// initializes the cache
 		for (int i = 0; i < number_of_sets; i++) {
 			ArrayList<Line> insert = new ArrayList<Line>(0);
 			for(int j = 0; j < this.associativity; j++)
@@ -25,6 +27,11 @@ public class Cache {
 				insert.add(new Line(this.dataBlockSize));
 			}
 			data.add(insert);
+		}
+
+		// initializes the LRU U-bit array if necessary
+		if (this.replacementPolicy == 2) {
+			LRU = new ArrayList<Integer>((number_of_sets * associativity) / 2);
 		}
 
 	}
