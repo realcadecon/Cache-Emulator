@@ -56,6 +56,15 @@ public class Cache {
 	public void memoryDump () {
 		
 	}
+
+	@Override
+	public String toString() {
+		return "Cache [cacheSize=" + cacheSize + ", dataBlockSize=" + dataBlockSize + ", associativity=" + associativity
+				+ ", replacementPolicy=" + replacementPolicy + ", writePolicy=" + writePolicy + ", missPolicy="
+				+ missPolicy + "]";
+	}
+	
+	
 	
 }
 
