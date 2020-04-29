@@ -70,10 +70,11 @@ public class Cache {
 		}
 		int blockOffset = Integer.parseInt(binAddress.substring(this.blockOffsetStartingBit, 2));
 		int setIndex = Integer.parseInt(binAddress.substring(this.setIndexStartingBit, this.blockOffsetStartingBit), 2);
-		int tag = Integer.parseInt(binAddress.substring(0, this.setIndexStartingBit));
+		int tag = Integer.parseInt(binAddress.substring(0, this.setIndexStartingBit), 2);
 
 		boolean hit = false;
 		int requestedData = 0;
+		// Searches through set for matching tag
 		for(int i = 0; i < this.associativity; i++) {
 			if (data.get(setIndex).get(i).getValid() == 1)
 				if(data.get(setIndex).get(i).getTag() == tag) {
@@ -82,12 +83,41 @@ public class Cache {
 					break;
 				}
 		}
+
+		// Cache miss
 		if(!hit) {
-			//Look in memory
+			// generating address to retrieve data from memory (replace block offset bits with 0)
+			String binBlockRetrievalAddress = binAddress.substring(0, this.blockOffsetStartingBit);
+			while(binBlockRetrievalAddress.length() < Cache.ADDRESS_SIZE) {
+				binBlockRetrievalAddress = binBlockRetrievalAddress + "0";
+			}
+			int blockRetrievalAddress = Integer.parseInt(binBlockRetrievalAddress, 2);
+			
+			// Cache miss handling for 1-way associative/direct-mapped
+			if(this.associativity == 1) {
+				for(int i = 0; i < this.dataBlockSize; i++) {
+					data.get(setIndex).get(0).getBlock().set(i, Integer.parseInt(ram.getByte(blockRetrievalAddress + i), 16));
+				}
+				data.get(setIndex).get(0).setTag(tag);
+				data.get(setIndex).get(0).setValid(1);
+				requestedData = data.get(setIndex).get(0).getBlock().get(blockOffset);
+			}
+			// Cache miss handling for non-1-way associative
+			else if(this.replacementPolicy == 1) { // Random Replacement
+				int lineIndexReplacement = (int) (this.associativity * Math.random());
+				for(int i = 0; i < this.dataBlockSize; i++) {
+					data.get(setIndex).get(lineIndexReplacement).getBlock().set(i, Integer.parseInt(ram.getByte(blockRetrievalAddress + i), 16));
+				}
+				data.get(setIndex).get(lineIndexReplacement).setTag(tag);
+				data.get(setIndex).get(lineIndexReplacement).setValid(1);
+				requestedData = data.get(setIndex).get(lineIndexReplacement).getBlock().get(blockOffset);
+			}
+			else if(this.replacementPolicy == 2) { // LRU Replacement Policy
+				
+			}
 		}
-		else {
-			System.out.println(""); //format output
-		}
+		
+		System.out.println(""); //format output
 	}
 	
 	public void cacheWrite() {
@@ -146,11 +176,13 @@ public class Cache {
 class Line {
 	private int valid;
 	private int tag;
+	private int dirtyBit;
 	private ArrayList<Integer> block;
 
 	public Line (int blockSize) {
 		valid = 0;
 		tag = 0;
+		dirtyBit = 0;
 		this.block = new ArrayList<Integer>(blockSize);
 	}
 
