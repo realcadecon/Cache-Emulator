@@ -3,8 +3,9 @@ import java.util.ArrayList;
 import java.lang.Math;
 
 public class Cache {
-	
+	private static final int ADDRESS_SIZE = 8;
 	private int cacheSize, dataBlockSize, associativity, replacementPolicy, writePolicy, missPolicy;
+	private int numberOfSets, blockOffsetStartingBit, setIndexStartingBit;
 	private ArrayList<ArrayList<Line>> data;
 	private RAM ram;
 	private ArrayList<Integer> LRU; // Holds the U-bits for LRU-replacement policy
@@ -19,11 +20,11 @@ public class Cache {
 		this.writePolicy = writePolicy;
 		this.missPolicy = missPolicy;
 		
-		int number_of_sets = this.cacheSize / (this.associativity * this.dataBlockSize); //calculating number of sets
-		this.data = new ArrayList<ArrayList<Line>>(0); //creates actual cache
+		numberOfSets = this.cacheSize / (this.associativity * this.dataBlockSize); //calculating number of sets
+		this.data = new ArrayList<ArrayList<Line>>(0); //creates 
 
 		// initializes the cache
-		for (int i = 0; i < number_of_sets; i++) {
+		for (int i = 0; i < numberOfSets; i++) {
 			ArrayList<Line> insert = new ArrayList<Line>(0);
 			for(int j = 0; j < this.associativity; j++)
 			{
@@ -37,8 +38,11 @@ public class Cache {
 		// line 0 of 1 is the least recently used line in the pair and therefore
 		// should be the replaced line if all lines are full.
 		if (this.replacementPolicy == 2) {
-			LRU = new ArrayList<Integer>((number_of_sets * associativity) / 2);
+			LRU = new ArrayList<Integer>((numberOfSets * associativity) / 2);
 		}
+
+		this.blockOffsetStartingBit = Cache.ADDRESS_SIZE - (int) (Math.log(this.dataBlockSize)/Math.log(2));
+		this.setIndexStartingBit = Cache.ADDRESS_SIZE - this.blockOffsetStartingBit - (int) (Math.log(this.numberOfSets)/Math.log(2));
 
 	}
 	
@@ -49,7 +53,29 @@ public class Cache {
 	public void cacheRead(String hex) {
 		int address = Integer.parseInt(hex, 16);
 		String binAddress = Integer.toBinaryString(address);
-		int blockOffset = Integer.parseInt(binAddress.substring((int) (binAddress.length() - (Math.log(this.dataBlockSize)/Math.log(2)))));
+		while (binAddress.length() < Cache.ADDRESS_SIZE) {
+			binAddress = "0" + binAddress;
+		}
+		int blockOffset = Integer.parseInt(binAddress.substring(this.blockOffsetStartingBit, 2));
+		int setIndex = Integer.parseInt(binAddress.substring(this.setIndexStartingBit, this.blockOffsetStartingBit), 2);
+		int tag = Integer.parseInt(binAddress.substring(0, this.setIndexStartingBit));
+
+		boolean hit = false;
+		int requestedData = 0;
+		for(int i = 0; i < this.associativity; i++) {
+			if (data.get(setIndex).get(i).getValid() == 1)
+				if(data.get(setIndex).get(i).getTag() == tag) {
+					hit = true;
+					requestedData = data.get(setIndex).get(i).getBlock().get(blockOffset);
+					break;
+				}
+		}
+		if(!hit) {
+			//Look in memory
+		}
+		else {
+			System.out.println(""); //format output
+		}
 	}
 	
 	public void cacheWrite() {
@@ -57,7 +83,15 @@ public class Cache {
 	}
 	
 	public void cacheFlush() {
-		
+		for (int i = 0; i < this.numberOfSets; i++) {
+			for (int j = 0; j < this.associativity; j++) {
+				data.get(i).get(j).setTag(0);
+				data.get(i).get(j).setValid(0);
+				for(int k = 0; k < this.dataBlockSize; k++) {
+					data.get(i).get(j).getBlock().set(k, 0);
+				}
+			}
+		}
 	}
 	
 	public void cacheView () {
@@ -90,12 +124,16 @@ public class Cache {
 class Line {
 	private int valid;
 	private int tag;
-	private ArrayList<Byte> block;
+	private ArrayList<Integer> block;
 
 	public Line (int blockSize) {
 		valid = 0;
 		tag = 0;
-		this.block = new ArrayList<Byte>(blockSize);
+		this.block = new ArrayList<Integer>(blockSize);
+	}
+
+	public ArrayList<Integer> getBlock() {
+		return block;
 	}
 
 	public int getValid() {
