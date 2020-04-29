@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.lang.Math;
 
 public class Cache {
 	
@@ -32,7 +33,7 @@ public class Cache {
 		// initializes the LRU U-bit array if necessary
 		// each index in the LRU array will hold a 0 or 1 to represent that 
 		// line 0 of 1 is the least recently used line in the pair and therefore
-		// should be the replaced line.
+		// should be the replaced line if all lines are full.
 		if (this.replacementPolicy == 2) {
 			LRU = new ArrayList<Integer>((number_of_sets * associativity) / 2);
 		}
@@ -40,6 +41,9 @@ public class Cache {
 	}
 	
 	public void cacheRead(String hex) {
+		int address = Integer.parseInt(hex, 16);
+		String binAddress = Integer.toBinaryString(address);
+		int blockOffset = Integer.parseInt(binAddress.substring((int) (binAddress.length() - (Math.log(this.dataBlockSize)/Math.log(2)))));
 		
 	}
 	
