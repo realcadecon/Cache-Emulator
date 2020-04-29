@@ -1,5 +1,7 @@
 
 import java.util.ArrayList;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.lang.Math;
 
 public class Cache {
@@ -102,12 +104,31 @@ public class Cache {
 		
 	}
 	
-	public void cacheDump () {
+	PrintWriter outputFile;		//scanner for writing to output files
+	public void cacheDump () {	//writes cache contents to cache.txt file
+		try {
+			outputFile = new PrintWriter("cache.txt");
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 		
+		String output = "";
+		for(int r=0; r<data.size(); r++) {
+			for(int c=0; c<(data.get(r)).size(); c++) {
+				output+= data.get(r).get(c) + "\n";
+			}
+		}
+		outputFile.write(output);
 	}
 	
-	public void memoryDump () {
-		
+	public void memoryDump () { //writes ram contents to ram.txt
+		try {
+			outputFile = new PrintWriter("ram.txt");
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		String output = ram.toString();
+		outputFile.write(output);
 	}
 
 	@Override
@@ -116,9 +137,6 @@ public class Cache {
 				+ ", replacementPolicy=" + replacementPolicy + ", writePolicy=" + writePolicy + ", missPolicy="
 				+ missPolicy + "]";
 	}
-	
-	
-	
 }
 
 class Line {
