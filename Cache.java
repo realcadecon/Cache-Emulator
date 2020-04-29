@@ -62,14 +62,15 @@ public class Cache {
 		this.ram = ram;
 	}
 	
+	
 	public void cacheRead(String hex) {
 		int address = Integer.parseInt(hex, 16);
-		String binAddress = Integer.toBinaryString(address);
-		while (binAddress.length() < Cache.ADDRESS_SIZE) {
-			binAddress = "0" + binAddress;
+		String binAddress = Integer.toBinaryString(address);	//converts address to binary from hex
+		while (binAddress.length() < Cache.ADDRESS_SIZE) {		//formats address in order to add tag bits, block offset bits and set index
+			binAddress = "0" + binAddress;	
 		}
-		int blockOffset = Integer.parseInt(binAddress.substring(this.blockOffsetStartingBit, 2));
-		int setIndex = Integer.parseInt(binAddress.substring(this.setIndexStartingBit, this.blockOffsetStartingBit), 2);
+		int blockOffset = Integer.parseInt(binAddress.substring(this.blockOffsetStartingBit, 2)); //sets block offset bits
+		int setIndex = Integer.parseInt(binAddress.substring(this.setIndexStartingBit, this.blockOffsetStartingBit), 2); //sets setIndex
 		int tag = Integer.parseInt(binAddress.substring(0, this.setIndexStartingBit), 2);
 
 		boolean hit = false;
