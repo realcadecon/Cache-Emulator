@@ -78,7 +78,15 @@ public class Cache {
 	}
 	
 	public void cacheFlush() {
-		
+		for (int i = 0; i < this.numberOfSets; i++) {
+			for (int j = 0; j < this.associativity; j++) {
+				data.get(i).get(j).setTag(0);
+				data.get(i).get(j).setValid(0);
+				for(int k = 0; k < this.dataBlockSize; k++) {
+					data.get(i).get(j).getBlock().set(k, 0);
+				}
+			}
+		}
 	}
 	
 	public void cacheView () {
@@ -111,15 +119,15 @@ public class Cache {
 class Line {
 	private int valid;
 	private int tag;
-	private ArrayList<Byte> block;
+	private ArrayList<Integer> block;
 
 	public Line (int blockSize) {
 		valid = 0;
 		tag = 0;
-		this.block = new ArrayList<Byte>(blockSize);
+		this.block = new ArrayList<Integer>(blockSize);
 	}
 
-	public ArrayList<Byte> getBlock() {
+	public ArrayList<Integer> getBlock() {
 		return block;
 	}
 
