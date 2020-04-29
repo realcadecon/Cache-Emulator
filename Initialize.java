@@ -6,6 +6,7 @@ import java.util.Scanner;
 public class Initialize {
 	
 	private Scanner fileIn;
+	Scanner kb;
 	
 	public Initialize(String filename) {
 		try {
@@ -14,6 +15,7 @@ public class Initialize {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		kb = new Scanner(System.in);
 	}
 	
 	public ArrayList<String> setRAM() {
@@ -28,7 +30,6 @@ public class Initialize {
 	}
 	
 	public Cache configureCache() {
-		Scanner kb = new Scanner(System.in);
 		int cacheSize = 0;
 		int dataBlockSize = 0;
 		int associativity = 0;
@@ -154,8 +155,6 @@ public class Initialize {
 			}
 		}
 		
-		kb.close();
-		
 		//create and return configured cache
 		Cache cache = new Cache(cacheSize, dataBlockSize, associativity, replacementPolicy, 
 				writePolicy, missPolicy);
@@ -170,6 +169,14 @@ public class Initialize {
 			return false;
 		}
 		return true;
+	}
+	
+	public String getInput() {
+		return kb.next();
+	}
+	
+	public void closeKB() {
+		kb.close();
 	}
 	
 	
