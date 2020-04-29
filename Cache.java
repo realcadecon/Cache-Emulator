@@ -11,6 +11,8 @@ public class Cache {
 	private ArrayList<ArrayList<Line>> data;
 	private RAM ram;
 	private ArrayList<Integer> LRU; // Holds the U-bits for LRU-replacement policy
+	PrintWriter outCache, outRAM;
+	
 
 	public Cache(int cacheSize, int dataBlockSize, int associativity, int replacementPolicy, 
 			int writePolicy, int missPolicy) {
@@ -21,6 +23,14 @@ public class Cache {
 		this.replacementPolicy = replacementPolicy;
 		this.writePolicy = writePolicy;
 		this.missPolicy = missPolicy;
+		
+		try {
+			outCache = new PrintWriter("cache.txt");
+			outRAM = new PrintWriter("ram.txt");
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		
 		
 		numberOfSets = this.cacheSize / (this.associativity * this.dataBlockSize); //calculating number of sets
 		this.data = new ArrayList<ArrayList<Line>>(0); //creates 
@@ -104,31 +114,25 @@ public class Cache {
 		
 	}
 	
-	PrintWriter outputFile;		//scanner for writing to output files
+	
 	public void cacheDump () {	//writes cache contents to cache.txt file
-		try {
-			outputFile = new PrintWriter("cache.txt");
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		
 		String output = "";
 		for(int r=0; r<data.size(); r++) {
 			for(int c=0; c<(data.get(r)).size(); c++) {
 				output+= data.get(r).get(c) + "\n";
 			}
 		}
-		outputFile.write(output);
+		outCache.write(output);
 	}
 	
 	public void memoryDump () { //writes ram contents to ram.txt
-		try {
-			outputFile = new PrintWriter("ram.txt");
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
 		String output = ram.toString();
-		outputFile.write(output);
+		outRAM.write(output);
+	}
+	
+	public void closeOutFiles() {
+		outRAM.close();
+		outCache.close();
 	}
 
 	@Override

@@ -76,9 +76,7 @@ public class Driver {
 			
 		}
 		util.closeKB();
-		
-		System.out.println(ram);
-		System.out.println(cache);
+		cache.closeOutFiles();
 		System.out.println("Finished.");
 	}
 
