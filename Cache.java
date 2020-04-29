@@ -1,3 +1,4 @@
+
 import java.util.ArrayList;
 import java.lang.Math;
 
@@ -17,8 +18,8 @@ public class Cache {
 		this.writePolicy = writePolicy;
 		this.missPolicy = missPolicy;
 		
-		int number_of_sets = this.cacheSize / (this.associativity * this.dataBlockSize);
-		this.data = new ArrayList<ArrayList<Line>>(0);
+		int number_of_sets = this.cacheSize / (this.associativity * this.dataBlockSize); //calculating number of sets
+		this.data = new ArrayList<ArrayList<Line>>(0); //creates 
 
 		// initializes the cache
 		for (int i = 0; i < number_of_sets; i++) {
@@ -44,7 +45,6 @@ public class Cache {
 		int address = Integer.parseInt(hex, 16);
 		String binAddress = Integer.toBinaryString(address);
 		int blockOffset = Integer.parseInt(binAddress.substring((int) (binAddress.length() - (Math.log(this.dataBlockSize)/Math.log(2)))));
-		
 	}
 	
 	public void cacheWrite() {
