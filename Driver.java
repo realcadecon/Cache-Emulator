@@ -49,7 +49,8 @@ public class Driver {
 			
 			switch(command){
 				case 1:
-					cache.cacheRead(temp);
+					String hexAddress = util.getInput();
+					cache.cacheRead(hexAddress);
 					break;
 				case 2:
 					cache.cacheWrite();
