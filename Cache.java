@@ -54,6 +54,23 @@ public class Cache {
 		int blockOffset = Integer.parseInt(binAddress.substring(this.blockOffsetStartingBit, 2));
 		int setIndex = Integer.parseInt(binAddress.substring(this.setIndexStartingBit, this.blockOffsetStartingBit), 2);
 		int tag = Integer.parseInt(binAddress.substring(0, this.setIndexStartingBit));
+
+		boolean hit = false;
+		int requestedData = 0;
+		for(int i = 0; i < this.associativity; i++) {
+			if (data.get(setIndex).get(i).getValid() == 1)
+				if(data.get(setIndex).get(i).getTag() == tag) {
+					hit = true;
+					requestedData = data.get(setIndex).get(i).getBlock().get(blockOffset);
+					break;
+				}
+		}
+		if(!hit) {
+			//Look in memory
+		}
+		else {
+			System.out.println(""); //format output
+		}
 	}
 	
 	public void cacheWrite() {
@@ -100,6 +117,10 @@ class Line {
 		valid = 0;
 		tag = 0;
 		this.block = new ArrayList<Byte>(blockSize);
+	}
+
+	public ArrayList<Byte> getBlock() {
+		return block;
 	}
 
 	public int getValid() {
