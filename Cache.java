@@ -1,3 +1,10 @@
+// File: Cache
+// Author(s): Cade Conner and William Henry
+// Date: 04/29/2020
+// Section: CC: 310, WH: 508
+// E-mail: cadejconner@tamu.edu 
+// Description: This file contains all of Cache's data members and functions.
+// e.g. The content of this file implements ...
 
 import java.util.ArrayList;
 import java.io.FileNotFoundException;
