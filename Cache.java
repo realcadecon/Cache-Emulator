@@ -3,8 +3,9 @@ import java.util.ArrayList;
 import java.lang.Math;
 
 public class Cache {
-	
+	private static final int ADDRESS_SIZE = 8;
 	private int cacheSize, dataBlockSize, associativity, replacementPolicy, writePolicy, missPolicy;
+	private int numberOfSets, blockOffsetStartingBit, setIndexStartingBit;
 	private ArrayList<ArrayList<Line>> data;
 	private ArrayList<Integer> LRU; // Holds the U-bits for LRU-replacement policy
 
@@ -18,11 +19,11 @@ public class Cache {
 		this.writePolicy = writePolicy;
 		this.missPolicy = missPolicy;
 		
-		int number_of_sets = this.cacheSize / (this.associativity * this.dataBlockSize); //calculating number of sets
+		numberOfSets = this.cacheSize / (this.associativity * this.dataBlockSize); //calculating number of sets
 		this.data = new ArrayList<ArrayList<Line>>(0); //creates 
 
 		// initializes the cache
-		for (int i = 0; i < number_of_sets; i++) {
+		for (int i = 0; i < numberOfSets; i++) {
 			ArrayList<Line> insert = new ArrayList<Line>(0);
 			for(int j = 0; j < this.associativity; j++)
 			{
@@ -36,15 +37,23 @@ public class Cache {
 		// line 0 of 1 is the least recently used line in the pair and therefore
 		// should be the replaced line if all lines are full.
 		if (this.replacementPolicy == 2) {
-			LRU = new ArrayList<Integer>((number_of_sets * associativity) / 2);
+			LRU = new ArrayList<Integer>((numberOfSets * associativity) / 2);
 		}
+
+		this.blockOffsetStartingBit = Cache.ADDRESS_SIZE - (int) (Math.log(this.dataBlockSize)/Math.log(2));
+		this.setIndexStartingBit = Cache.ADDRESS_SIZE - this.blockOffsetStartingBit - (int) (Math.log(this.numberOfSets)/Math.log(2));
 
 	}
 	
 	public void cacheRead(String hex) {
 		int address = Integer.parseInt(hex, 16);
 		String binAddress = Integer.toBinaryString(address);
-		int blockOffset = Integer.parseInt(binAddress.substring((int) (binAddress.length() - (Math.log(this.dataBlockSize)/Math.log(2)))));
+		while (binAddress.length() < Cache.ADDRESS_SIZE) {
+			binAddress = "0" + binAddress;
+		}
+		int blockOffset = Integer.parseInt(binAddress.substring(this.blockOffsetStartingBit, 2));
+		int setIndex = Integer.parseInt(binAddress.substring(this.setIndexStartingBit, this.blockOffsetStartingBit), 2);
+		int tag = Integer.parseInt(binAddress.substring(0, this.setIndexStartingBit));
 	}
 	
 	public void cacheWrite() {
