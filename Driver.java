@@ -9,7 +9,8 @@
 public class Driver {
 
 	public static void main(String[] args) {
-		Initialize util = new Initialize("C:\\Users\\cadea\\eclipse-workspace\\Cache Simulator\\src\\input.txt");
+		String fileLocation = args[1];
+		Initialize util = new Initialize(fileLocation);
 		
 		//RAM set up and initialization
 		RAM ram = new RAM();
