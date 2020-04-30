@@ -252,7 +252,7 @@ public class Cache {
 				requestedLine = i;
 				data.get(setIndex).get(i).getBlock().set(blockOffset, Integer.parseInt(hexValue.substring(2), 16));
 				if(this.writePolicy == 1) {
-					ram.setByte(address)
+					ram.setByte(address, hexValue);
 				}
 			}
 		}
