@@ -162,9 +162,8 @@ public class Cache {
 		numMisses = 0;
 	}
 	
-	public void cacheView () {
+	public void cacheView () {	//prints out cache to console
 		String output = "";
-		output+="cache_content:\n";
 		output+="cache_size:"+ cacheSize+"\n";
 		output+="data_block_size:"+dataBlockSize+"\n";
 		output+="associativity:"+associativity+"\n";
@@ -186,8 +185,28 @@ public class Cache {
 		System.out.println(output);
 	}
 	
-	public void memoryView () {
-		
+	public void memoryView () {	//prints out RAM to console
+		String output = "";
+		int j = 0;
+		output+="memory_size:256\n";
+		output+="memory_content:\n";
+		output+="Address:Data\n";
+		output+="0x0"+Integer.toHexString(0)+":";
+		for(int i=1; i<=256; i++) {
+			if(j>=8) {
+				if(i<10) {
+					output+="\n0x0" + Integer.toHexString(i-1)+":";
+				}
+				else {
+					output+="\n0x" + Integer.toHexString(i-1)+":";
+				}
+				j=0;
+			}
+			//0x<address in hex format>:<8 bytes of data starting from provided address separated by single space, format:hex>
+			output += ram.getByte(i-1)+ " ";
+			j++;
+		}
+		System.out.println(output);
 	}
 	
 	
