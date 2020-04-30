@@ -1,7 +1,7 @@
 // File: RAM
 // Author(s): Cade Conner and William Henry
 // Date: 04/29/2020
-// Section: CC: 310, WH: 508
+// Section: CC: 510, WH: 508
 // E-mail: cadejconner@tamu.edu 
 // Description: RAM contains data members and functions needed for our memory.
 // e.g. The content of this file implements...
