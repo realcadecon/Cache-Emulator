@@ -112,6 +112,7 @@ public class Cache {
 		}
 
 		// Cache miss
+		int lineIndexReplacement;
 		if(!hit) {
 			// generating address to retrieve data from memory (replace block offset bits with 0)
 			String binBlockRetrievalAddress = binAddress.substring(0, this.blockOffsetStartingBit);
@@ -131,7 +132,7 @@ public class Cache {
 			}
 			// Cache miss handling for non-1-way associative
 			else if(this.replacementPolicy == 1) { // Random Replacement
-				int lineIndexReplacement = -1;
+				lineIndexReplacement = -1;
 				for(int i = 0; i < this.associativity; i++) {
 					if(data.get(setIndex).get(i).getValid() == 0) {
 						lineIndexReplacement = i;
@@ -157,7 +158,7 @@ public class Cache {
 					}
 				}
 				if (lineIndexReplacement == -1) {
-					if(this.associativity == 2) {
+					if(this.associativity == 2) { // 2-way Associative
 						if(lru.get(setIndex) == 0) {
 							lineIndexReplacement = 0;
 							lru.set(setIndex, 1);
@@ -167,11 +168,22 @@ public class Cache {
 							lru.set(setIndex, 0);
 						}
 					}
+					else { // 4-way associative
+						String order = Integer.toString(lru.get(setIndex), 4);
+						lineIndexReplacement = ((int) (order.charAt(0))) - 48;
+						order = order.substring(1, 4) + order.substring(0, 1);
+						lru.set(setIndex, Integer.parseInt(order, 4));
+					}
 				}
+				for(int i = 0; i < this.dataBlockSize; i++) {
+					data.get(setIndex).get(lineIndexReplacement).getBlock().set(i, Integer.parseInt(ram.getByte(blockRetrievalAddress + i), 16));
+				}
+				data.get(setIndex).get(lineIndexReplacement).setTag(tag);
+				data.get(setIndex).get(lineIndexReplacement).setValid(1);
+				requestedData = data.get(setIndex).get(lineIndexReplacement).getBlock().get(blockOffset);
 			}
 		}
-		
-		System.out.println(""); //format output
+		System.out.println("set: " + setIndex + "\ntag: " + tag + "\nhit: " + (hit ? "yes":"no") + "\neviction_line: " + lineIndexReplacement + "\nram_address: " + hex + "\ndata: " + requestedData); //format output
 	}
 	
 	public void cacheWrite() {
