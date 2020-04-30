@@ -90,12 +90,12 @@ public class Cache {
 	
 	
 	public void cacheRead(String hex) {
-		int address = Integer.parseInt(hex, 16);
+		int address = Integer.parseInt(hex.substring(2), 16);
 		String binAddress = Integer.toBinaryString(address);	//converts address to binary from hex
 		while (binAddress.length() < Cache.ADDRESS_SIZE) {		//formats address in order to add tag bits, block offset bits and set index
 			binAddress = "0" + binAddress;	
 		}
-		int blockOffset = Integer.parseInt(binAddress.substring(this.blockOffsetStartingBit, 2)); //sets block offset bits
+		int blockOffset = Integer.parseInt(binAddress.substring(this.blockOffsetStartingBit), 2); //sets block offset bits
 		int setIndex = Integer.parseInt(binAddress.substring(this.setIndexStartingBit, this.blockOffsetStartingBit), 2); //sets setIndex
 		int tag = Integer.parseInt(binAddress.substring(0, this.setIndexStartingBit), 2); //sets tagBits
 
@@ -234,8 +234,24 @@ public class Cache {
 		System.out.println("set: " + setIndex + "\ntag: " + tag + "\nhit: " + (hit ? "yes":"no") + "\neviction_line: " + lineIndexReplacement + "\nram_address: " + hex + "\ndata: " + requestedData); //format output
 	}
 	
-	public void cacheWrite() {
-		
+	public void cacheWrite(String hexAddress, String hexValue) {
+		int address = Integer.parseInt(hexAddress, 16);
+		String binAddress = Integer.toBinaryString(address);	//converts address to binary from hex
+		while (binAddress.length() < Cache.ADDRESS_SIZE) {		//formats address in order to add tag bits, block offset bits and set index
+			binAddress = "0" + binAddress;	
+		}
+		int blockOffset = Integer.parseInt(binAddress.substring(this.blockOffsetStartingBit, 2)); //sets block offset bits
+		int setIndex = Integer.parseInt(binAddress.substring(this.setIndexStartingBit, this.blockOffsetStartingBit), 2); //sets setIndex
+		int tag = Integer.parseInt(binAddress.substring(0, this.setIndexStartingBit), 2); //sets tagBits
+
+		boolean hit = false;
+		int requestedLine = 0;
+		for (int i = 0; i < this.associativity; i++) {
+			if(data.get(setIndex).get(i).getTag() == tag) {
+				hit = true;
+
+			}
+		}
 	}
 	
 	public void cacheFlush() {
