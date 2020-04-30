@@ -244,7 +244,7 @@ public class Cache {
 	}
 	
 	public void cacheWrite(String hexAddress, String hexValue) {
-		int address = Integer.parseInt(hexAddress, 16);
+		int address = Integer.parseInt(hexAddress.substring(2), 16);
 		String binAddress = Integer.toBinaryString(address);	//converts address to binary from hex
 		while (binAddress.length() < Cache.ADDRESS_SIZE) {		//formats address in order to add tag bits, block offset bits and set index
 			binAddress = "0" + binAddress;	
@@ -258,9 +258,15 @@ public class Cache {
 		for (int i = 0; i < this.associativity; i++) {
 			if(data.get(setIndex).get(i).getTag() == tag) {
 				hit = true;
-
+				requestedLine = i;
+				data.get(setIndex).get(i).getBlock().set(blockOffset, Integer.parseInt(hexValue.substring(2), 16));
+				if(this.writePolicy == 1) {
+					ram.setByte(address, hexValue);
+				}
 			}
 		}
+
+
 	}
 	
 	public void cacheFlush() {
