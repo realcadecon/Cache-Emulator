@@ -369,7 +369,10 @@ class Line {
 		valid = 0;
 		tag = 0;
 		dirtyBit = 0;
-		this.block = new ArrayList<Integer>(blockSize);
+		this.block = new ArrayList<Integer>(0);
+		for(int i = 0; i < blockSize; i++) {
+			this.block.add(0);
+		}
 	}
 
 	public ArrayList<Integer> getBlock() {
