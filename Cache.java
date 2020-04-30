@@ -112,7 +112,7 @@ public class Cache {
 		}
 
 		// Cache miss
-		int lineIndexReplacement = -1;
+		int lineIndexReplacement = 0;
 		if(!hit) {
 			// generating address to retrieve data from memory (replace block offset bits with 0)
 			String binBlockRetrievalAddress = binAddress.substring(0, this.blockOffsetStartingBit);
