@@ -58,14 +58,15 @@ public class Driver {
 			
 			switch(command){
 				case 1:
-					System.out.print("Enter hex address (30 decimal == 1e hex): ");
+					System.out.print("Enter hex address (30 decimal == 0x1e hex): ");
 					String hexAddress1 = util.getInput();
+					System.out.println(hexAddress1.substring(2));
 					cache.cacheRead(hexAddress1);
 					break;
 				case 2:
-					System.out.print("Enter hex address (30 decimal == 1e hex): ");
+					System.out.print("Enter hex address (30 decimal == 0x1e hex): ");
 					String hexAddress2 = util.getInput();
-					System.out.print("Enter hex value (30 decimal == 1e hex): ");
+					System.out.print("Enter hex value (30 decimal == 0x1e hex): ");
 					String hexVal = util.getInput();
 					cache.cacheWrite(hexAddress2, hexVal);
 					break;
