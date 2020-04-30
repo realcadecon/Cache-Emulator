@@ -43,9 +43,9 @@ public class Cache {
 		this.data = new ArrayList<ArrayList<Line>>(0); //creates 
 
 		// initializes the cache
-		for (int i = 0; i < numberOfSets; i++) {
+		for (int i = 0; i < numberOfSets; i++) {	//loops through number of sets
 			ArrayList<Line> insert = new ArrayList<Line>(0);
-			for(int j = 0; j < this.associativity; j++)
+			for(int j = 0; j < this.associativity; j++)		//loops through number of lines per set
 			{
 				insert.add(new Line(this.dataBlockSize));
 			}
@@ -78,14 +78,14 @@ public class Cache {
 		}
 		int blockOffset = Integer.parseInt(binAddress.substring(this.blockOffsetStartingBit, 2)); //sets block offset bits
 		int setIndex = Integer.parseInt(binAddress.substring(this.setIndexStartingBit, this.blockOffsetStartingBit), 2); //sets setIndex
-		int tag = Integer.parseInt(binAddress.substring(0, this.setIndexStartingBit), 2);
+		int tag = Integer.parseInt(binAddress.substring(0, this.setIndexStartingBit), 2); //sets tagBits
 
 		boolean hit = false;
 		int requestedData = 0;
 		// Searches through set for matching tag
 		for(int i = 0; i < this.associativity; i++) {
-			if (data.get(setIndex).get(i).getValid() == 1)
-				if(data.get(setIndex).get(i).getTag() == tag) {
+			if (data.get(setIndex).get(i).getValid() == 1)	//checks valid bit for given line in a set
+				if(data.get(setIndex).get(i).getTag() == tag) {	//checks if tag bits match
 					hit = true;
 					requestedData = data.get(setIndex).get(i).getBlock().get(blockOffset);
 					break;
