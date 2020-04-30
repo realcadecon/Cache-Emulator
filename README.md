@@ -1,4 +1,4 @@
-# Cache-Emulator
+# Easy StartUp Guide
 ### Compiling the file:
 * The cache simulator is entirely coded in Java, which means it will run independently on any machine as long as you have JRE installed
 * We recommend using an IDE such as Eclipse and downloading our files into a java project for easy compilation and testing. 
