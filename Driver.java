@@ -25,7 +25,7 @@ public class Driver {
 		
 		boolean quit = false;
 		boolean goodVal = false;
-		int command = 0;
+		String command = "";
 		String temp = "";
 		while(!quit) {
 			System.out.println("\n***Cache simulator menu***\ntype one command\n"
@@ -42,50 +42,47 @@ public class Driver {
 			temp = util.getInput();
 			goodVal = false;
 			while(!goodVal) {
-				if(util.checkInt(temp)) {
-					if(Integer.valueOf(temp)<=8 && Integer.valueOf(temp)>=1) {
-						command = Integer.valueOf(temp);
-						goodVal = true;
-					}
-					else {
-						System.out.println("Error: command must be between 1 and 8. Please try again.");
-					}
+				if(!temp.equals("cache-read") && !temp.equals("cache-write") && !temp.equals("cache-flush") && !temp.equals("cache-view") && !temp.equals("memory-view") 
+				&& !temp.equals("cache-dump") && !temp.equals(" memory-dump") && !temp.equals("quit")) {
+					System.out.println("Error: No such command. Please check spelling and try again.");
+					temp = util.getInput();
 				}
-				else{
-					System.out.println("Error: command must be an integer. Please try again.");
+				else {
+					goodVal = true;
+					command = temp;
 				}
 			}
 			
 			switch(command){
-				case 1:
+				case "cache-read":
 					System.out.print("Enter hex address (30 decimal == 0x1e hex): ");
 					String hexAddress1 = util.getInput();
 					System.out.println(hexAddress1.substring(2));
 					cache.cacheRead(hexAddress1);
 					break;
-				case 2:
+				case "cache-write":
 					System.out.print("Enter hex address (30 decimal == 0x1e hex): ");
 					String hexAddress2 = util.getInput();
 					System.out.print("Enter hex value (30 decimal == 0x1e hex): ");
 					String hexVal = util.getInput();
 					cache.cacheWrite(hexAddress2, hexVal);
 					break;
-				case 3:
+				case "cache-flush":
 					cache.cacheFlush();
 					break;
-				case 4:
+				case "cache-view":
 					cache.cacheView();
 					break;
-				case 5:
+				case "memory-view":
 					cache.memoryView();
 					break;
-				case 6:
+				case "cache-dump":
 					cache.cacheDump();
 					break;
-				case 7:
+				case "memory-dump":
 					cache.memoryDump();
 					break;
-				case 8:
+				case "quit":
 					quit = true;
 					break;
 			}
