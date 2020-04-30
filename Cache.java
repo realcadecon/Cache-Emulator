@@ -209,7 +209,6 @@ public class Cache {
 		System.out.println(output);
 	}
 	
-	
 	public void cacheDump () {	//writes cache contents to cache.txt file
 		String output = "";
 		for(int r=0; r<data.size(); r++) {
