@@ -5,8 +5,10 @@
 * We recommend using an IDE such as Eclipse and downloading our files into a java project for easy compilation and testing. 
 ### Running the Progam:
  * Our program initializes the RAM with a given text file that contains a btye of memory per line. This is text file in added through the command line interface. In Eclipse, this can be hard to find.
- *  To access command line arguments, you first want to scroll over to the "Run" tab, click it, then click on "Run Configurations...".
+ 1. To access command line arguments, you first want to scroll over to the "Run" tab, click it, then click on "Run Configurations...".
 ![Code Portion](https://i.imgur.com/HKfDL3N.jpg)
+ 2. Next, just click on the arguments tab in proceed to type the file directory location of your input file.
+ ![File Directory](https://i.imgur.com/yPOI0mx.jpg)
  * After adding your input file directory, you are free to click the run button and experiment with your very own cache-simulation.
  ## Through Command Line Interface
  ### Compiling the file:
