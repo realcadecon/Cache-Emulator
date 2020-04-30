@@ -112,7 +112,7 @@ public class Cache {
 		}
 
 		// Cache miss
-		int lineIndexReplacement;
+		int lineIndexReplacement = -1;
 		if(!hit) {
 			// generating address to retrieve data from memory (replace block offset bits with 0)
 			String binBlockRetrievalAddress = binAddress.substring(0, this.blockOffsetStartingBit);
@@ -150,7 +150,7 @@ public class Cache {
 				requestedData = data.get(setIndex).get(lineIndexReplacement).getBlock().get(blockOffset);
 			}
 			else if(this.replacementPolicy == 2) { // LRU Replacement Policy
-				int lineIndexReplacement = -1;
+				lineIndexReplacement = -1;
 				for(int i = 0; i < this.associativity; i++) {
 					if(data.get(setIndex).get(i).getValid() == 0) {
 						lineIndexReplacement = i;
