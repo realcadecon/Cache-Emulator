@@ -1,7 +1,7 @@
 // File: Initalize
 // Author(s): Cade Conner and William Henry
 // Date: 04/29/2020
-// Section: CC: 310, WH: 508
+// Section: CC: 510, WH: 508
 // E-mail: cadejconner@tamu.edu 
 // Description: Initialize contains all functions to set up Cache/RAM and contains all input Scanners.
 // e.g. The content of this file implements...
