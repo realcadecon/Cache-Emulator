@@ -28,6 +28,10 @@ public class RAM {
 		return memory.get(adrs);
 	}
 
+	public void setByte(int adrs, String data) {
+		memory.set(adrs, data);
+	}
+
 	
 	public String toString() {
 		String output = "";

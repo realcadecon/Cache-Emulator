@@ -123,6 +123,22 @@ public class Cache {
 			
 			// Cache miss handling for 1-way associative/direct-mapped
 			if(this.associativity == 1) {
+				if (data.get(setIndex).get(0).getDirtyBit() == 1) {
+					int evictionTag = data.get(setIndex).get(0).getTag();
+					String binEvictionTag = Integer.toBinaryString(evictionTag);
+					while(binEvictionTag.length() < this.setIndexStartingBit) {
+						binEvictionTag = "0" + binEvictionTag;
+					}
+					String binEvictionAddress = binEvictionTag + binAddress.substring(this.setIndexStartingBit, this.blockOffsetStartingBit);
+					while(binEvictionAddress.length() < Cache.ADDRESS_SIZE) {
+						binEvictionAddress = binEvictionAddress + "0";
+					}
+					int evictionAddress = Integer.parseInt(binEvictionAddress, 2);
+					for(int i = 0; i < this.dataBlockSize; i++) {
+						ram.setByte(evictionAddress + i, Integer.toHexString(data.get(setIndex).get(0).getBlock().get(i)));
+					}
+					data.get(setIndex).get(0).setDirtyBit(0);
+				}
 				for(int i = 0; i < this.dataBlockSize; i++) {
 					data.get(setIndex).get(0).getBlock().set(i, Integer.parseInt(ram.getByte(blockRetrievalAddress + i), 16));
 				}
@@ -141,6 +157,22 @@ public class Cache {
 				}
 				if(lineIndexReplacement == -1) {
 					lineIndexReplacement = (int) (this.associativity * Math.random());
+					if (data.get(setIndex).get(lineIndexReplacement).getDirtyBit() == 1) {
+						int evictionTag = data.get(setIndex).get(lineIndexReplacement).getTag();
+						String binEvictionTag = Integer.toBinaryString(evictionTag);
+						while(binEvictionTag.length() < this.setIndexStartingBit) {
+							binEvictionTag = "0" + binEvictionTag;
+						}
+						String binEvictionAddress = binEvictionTag + binAddress.substring(this.setIndexStartingBit, this.blockOffsetStartingBit);
+						while(binEvictionAddress.length() < Cache.ADDRESS_SIZE) {
+							binEvictionAddress = binEvictionAddress + "0";
+						}
+						int evictionAddress = Integer.parseInt(binEvictionAddress, 2);
+						for(int i = 0; i < this.dataBlockSize; i++) {
+							ram.setByte(evictionAddress + i, Integer.toHexString(data.get(setIndex).get(lineIndexReplacement).getBlock().get(i)));
+						}
+						data.get(setIndex).get(lineIndexReplacement).setDirtyBit(0);
+					}
 				}
 				for(int i = 0; i < this.dataBlockSize; i++) {
 					data.get(setIndex).get(lineIndexReplacement).getBlock().set(i, Integer.parseInt(ram.getByte(blockRetrievalAddress + i), 16));
@@ -173,6 +205,22 @@ public class Cache {
 						lineIndexReplacement = ((int) (order.charAt(0))) - 48;
 						order = order.substring(1, 4) + order.substring(0, 1);
 						lru.set(setIndex, Integer.parseInt(order, 4));
+					}
+					if (data.get(setIndex).get(lineIndexReplacement).getDirtyBit() == 1) {
+						int evictionTag = data.get(setIndex).get(lineIndexReplacement).getTag();
+						String binEvictionTag = Integer.toBinaryString(evictionTag);
+						while(binEvictionTag.length() < this.setIndexStartingBit) {
+							binEvictionTag = "0" + binEvictionTag;
+						}
+						String binEvictionAddress = binEvictionTag + binAddress.substring(this.setIndexStartingBit, this.blockOffsetStartingBit);
+						while(binEvictionAddress.length() < Cache.ADDRESS_SIZE) {
+							binEvictionAddress = binEvictionAddress + "0";
+						}
+						int evictionAddress = Integer.parseInt(binEvictionAddress, 2);
+						for(int i = 0; i < this.dataBlockSize; i++) {
+							ram.setByte(evictionAddress + i, Integer.toHexString(data.get(setIndex).get(lineIndexReplacement).getBlock().get(i)));
+						}
+						data.get(setIndex).get(lineIndexReplacement).setDirtyBit(0);
 					}
 				}
 				for(int i = 0; i < this.dataBlockSize; i++) {
@@ -306,6 +354,10 @@ class Line {
 	
 	public int getDirtyBit() {
 		return dirtyBit;
+	}
+
+	public void setDirtyBit(int val) {
+		this.dirtyBit = val;
 	}
 	
 	public String getTagHex() {
