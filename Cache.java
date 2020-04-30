@@ -17,7 +17,7 @@ public class Cache {
 	private int numberOfSets, blockOffsetStartingBit, setIndexStartingBit;
 	private ArrayList<ArrayList<Line>> data;
 	private RAM ram;
-	private ArrayList<Integer> LRU; // Holds the U-bits for LRU-replacement policy
+	private ArrayList<Integer> lru; // Holds the U-bits for LRU-replacement policy
 	PrintWriter outCache, outRAM;
 	
 
@@ -60,7 +60,10 @@ public class Cache {
 		// line 0 of 1 is the least recently used line in the pair and therefore
 		// should be the replaced line if all lines are full.
 		if (this.replacementPolicy == 2) {
-			LRU = new ArrayList<Integer>((numberOfSets * associativity) / 2);
+			lru = new ArrayList<Integer>(0);
+			for(int i = 0; i < this.numberOfSets; i++) {
+				lru.add(0);
+			}
 		}
 
 		this.blockOffsetStartingBit = Cache.ADDRESS_SIZE - (int) (Math.log(this.dataBlockSize)/Math.log(2));
@@ -128,7 +131,16 @@ public class Cache {
 			}
 			// Cache miss handling for non-1-way associative
 			else if(this.replacementPolicy == 1) { // Random Replacement
-				int lineIndexReplacement = (int) (this.associativity * Math.random());
+				int lineIndexReplacement = -1;
+				for(int i = 0; i < this.associativity; i++) {
+					if(data.get(setIndex).get(i).getValid() == 0) {
+						lineIndexReplacement = i;
+						break;
+					}
+				}
+				if(lineIndexReplacement == -1) {
+					lineIndexReplacement = (int) (this.associativity * Math.random());
+				}
 				for(int i = 0; i < this.dataBlockSize; i++) {
 					data.get(setIndex).get(lineIndexReplacement).getBlock().set(i, Integer.parseInt(ram.getByte(blockRetrievalAddress + i), 16));
 				}
@@ -137,7 +149,25 @@ public class Cache {
 				requestedData = data.get(setIndex).get(lineIndexReplacement).getBlock().get(blockOffset);
 			}
 			else if(this.replacementPolicy == 2) { // LRU Replacement Policy
-				
+				int lineIndexReplacement = -1;
+				for(int i = 0; i < this.associativity; i++) {
+					if(data.get(setIndex).get(i).getValid() == 0) {
+						lineIndexReplacement = i;
+						break;
+					}
+				}
+				if (lineIndexReplacement == -1) {
+					if(this.associativity == 2) {
+						if(lru.get(setIndex) == 0) {
+							lineIndexReplacement = 0;
+							lru.set(setIndex, 1);
+						}
+						else {
+							lineIndexReplacement = 1;
+							lru.set(setIndex, 0);
+						}
+					}
+				}
 			}
 		}
 		
