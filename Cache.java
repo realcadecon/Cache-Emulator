@@ -13,7 +13,7 @@ import java.lang.Math;
 
 public class Cache {
 	private static final int ADDRESS_SIZE = 8;
-	private int cacheSize, dataBlockSize, associativity, replacementPolicy, writePolicy, missPolicy;
+	private int cacheSize, dataBlockSize, associativity, replacementPolicy, writePolicy, missPolicy, numHits, numMisses;
 	private int numberOfSets, blockOffsetStartingBit, setIndexStartingBit;
 	private ArrayList<ArrayList<Line>> data;
 	private RAM ram;
@@ -30,6 +30,9 @@ public class Cache {
 		this.replacementPolicy = replacementPolicy;
 		this.writePolicy = writePolicy;
 		this.missPolicy = missPolicy;
+		
+		numHits = 0;
+		numMisses = 0;
 		
 		try {
 			outCache = new PrintWriter("cache.txt");
@@ -62,7 +65,20 @@ public class Cache {
 
 		this.blockOffsetStartingBit = Cache.ADDRESS_SIZE - (int) (Math.log(this.dataBlockSize)/Math.log(2));
 		this.setIndexStartingBit = Cache.ADDRESS_SIZE - this.blockOffsetStartingBit - (int) (Math.log(this.numberOfSets)/Math.log(2));
-
+	}
+	
+	private String getWritePolicy(){
+		if(writePolicy == 1) {
+			return "write_through";
+		}
+		return "write_back";
+	}
+	
+	private String getMissPolicy() {
+		if(missPolicy == 1) {
+			return "write_allocate";
+		}
+		return "no_write_allocate";
 	}
 	
 	public void setMemory(RAM ram) {
@@ -142,10 +158,32 @@ public class Cache {
 				}
 			}
 		}
+		numHits = 0;
+		numMisses = 0;
 	}
 	
 	public void cacheView () {
-		
+		String output = "";
+		output+="cache_content:\n";
+		output+="cache_size:"+ cacheSize+"\n";
+		output+="data_block_size:"+dataBlockSize+"\n";
+		output+="associativity:"+associativity+"\n";
+		output+="replacement_policy:"+replacementPolicy+"\n";
+		output+="write_hit_policy:"+getWritePolicy()+"\n";
+		output+="write_miss_policy:"+getMissPolicy()+"\n";
+		output+="number_of_cache_hits:"+numHits+"\n";
+		output+="number_of_cache_misses:"+numMisses+"\n";
+		output+="cache_content:\n";
+		for(int set=0; set<data.size(); set++) {
+			for(int line=0; line<data.get(set).size(); line++) {
+				//<valid bit 0/1> <dirty bit 0/1> <tag in 2 digit hexadecimal> <hex data inside block>
+				output += data.get(set).get(line).getValid() + " " 
+						+ data.get(set).get(line).getDirtyBit() + " "
+						+ data.get(set).get(line).getTagHex() + " "
+						+ data.get(set).get(line).displayBlock() + "\n";
+			}
+		}
+		System.out.println(output);
 	}
 	
 	public void memoryView () {
@@ -205,6 +243,14 @@ class Line {
 	public int getTag() {
 		return this.tag;
 	}
+	
+	public int getDirtyBit() {
+		return dirtyBit;
+	}
+	
+	public String getTagHex() {
+		return Integer.toHexString(tag);
+	}
 
 	public void setValid(int v) {
 		this.valid = v;
@@ -212,6 +258,14 @@ class Line {
 
 	public void setTag(int t) {
 		this.tag = t;
+	}
+	
+	public String displayBlock() {
+		String output = "";
+		for(int i=0; i<block.size(); i++) {
+			output+= Integer.toHexString(block.get(i)) + " ";
+		}
+		return output;
 	}
 }
 
