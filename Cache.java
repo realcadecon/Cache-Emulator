@@ -43,6 +43,7 @@ public class Cache {
 		
 		
 		numberOfSets = this.cacheSize / (this.associativity * this.dataBlockSize); //calculating number of sets
+		System.out.println("numSets: " + numberOfSets);
 		this.data = new ArrayList<ArrayList<Line>>(0); //creates 
 
 		// initializes the cache
@@ -67,7 +68,7 @@ public class Cache {
 		}
 
 		this.blockOffsetStartingBit = Cache.ADDRESS_SIZE - (int) (Math.log(this.dataBlockSize)/Math.log(2));
-		this.setIndexStartingBit = Cache.ADDRESS_SIZE - this.blockOffsetStartingBit - (int) (Math.log(this.numberOfSets)/Math.log(2));
+		this.setIndexStartingBit = this.blockOffsetStartingBit - (int) (Math.log(this.numberOfSets)/Math.log(2));
 	}
 	
 	private String getWritePolicy(){
