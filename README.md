@@ -9,7 +9,7 @@
 ![Code Portion](https://i.imgur.com/HKfDL3N.jpg)
  2. Next, just click on the arguments tab in proceed to type the file directory location of your input file.
  ![File Directory](https://i.imgur.com/yPOI0mx.jpg)
- * After adding your input file directory, you are free to click the run button and experiment with your very own cache-simulation.
+ 3. After adding your input file directory, you are free to click the run button and experiment with your very own cache-simulation.
  ## Through Command Line Interface
  ### Compiling the file:
 * 
