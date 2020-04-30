@@ -58,6 +58,7 @@ public class Driver {
 			
 			switch(command){
 				case 1:
+					System.out.print("Enter hex address (30 decimal == 1e hex): ");
 					String hexAddress = util.getInput();
 					cache.cacheRead(hexAddress);
 					break;
