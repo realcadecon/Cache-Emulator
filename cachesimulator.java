@@ -6,7 +6,7 @@
 // Description: Driver connects all class together and contains the interaction menu.
 // e.g. The content of this file implements...
 
-public class Driver {
+public class cachesimulator {
 
 	public static void main(String[] args) {
 		String fileLocation = args[0];
