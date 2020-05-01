@@ -266,7 +266,14 @@ public class Cache {
 		while (binAddress.length() < Cache.ADDRESS_SIZE) {		//formats address in order to add tag bits, block offset bits and set index
 			binAddress = "0" + binAddress;	
 		}
-		int blockOffset = Integer.parseInt(binAddress.substring(this.blockOffsetStartingBit, 2)); //sets block offset bits
+		
+		int blockOffset;	//integer value of block offset
+		if(blockOffsetStartingBit==8) {
+			blockOffset = 0; //sets block offset bits
+		}
+		else{
+			blockOffset = Integer.parseInt(binAddress.substring(this.blockOffsetStartingBit), 2); //sets block offset bits
+		}
 		int setIndex = Integer.parseInt(binAddress.substring(this.setIndexStartingBit, this.blockOffsetStartingBit), 2); //sets setIndex
 		int tag = Integer.parseInt(binAddress.substring(0, this.setIndexStartingBit), 2); //sets tagBits
 
