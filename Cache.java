@@ -297,7 +297,7 @@ public class Cache {
 					data.get(setIndex).get(i).getBlock().set(blockOffset, Integer.parseInt(hexValue.substring(2), 16));
 					// Write-through policy
 					if(this.writePolicy == 1) {
-						ram.setByte(address, hexValue);
+						ram.setByte(address, hexValue.substring(2));
 					}
 					// Write-back policy
 					else {
@@ -444,8 +444,8 @@ public class Cache {
 					data.get(setIndex).get(lineIndexReplacement).setValid(1);
 				}
 			}
-			System.out.println("set: " + setIndex + "\ntag: " + tag + "\nhit: " + (hit ? "yes":"no") + "\neviction_line: " + lineIndexReplacement + "\nram_address: " + hexAddress + "\ndata: " + hexValue); //format output
 		}
+		System.out.println("set: " + setIndex + "\ntag: " + tag + "\nhit: " + (hit ? "yes":"no") + "\neviction_line: " + lineIndexReplacement + "\nram_address: " + hexAddress + "\ndata: " + hexValue); //format output
 	}
 	
 	public void cacheFlush() {
@@ -513,15 +513,17 @@ public class Cache {
 		String output = "";
 		for(int r=0; r<data.size(); r++) {
 			for(int c=0; c<(data.get(r)).size(); c++) {
-				output+= data.get(r).get(c) + "\n";
+				output+= data.get(r).get(c).displayBlock() + "\n";
 			}
 		}
 		outCache.write(output);
+		outCache.flush();
 	}
 	
 	public void memoryDump () { //writes ram contents to ram.txt
 		String output = ram.toString();
 		outRAM.write(output);
+		outRAM.flush();
 	}
 	
 	public void closeOutFiles() {
@@ -588,7 +590,12 @@ class Line {
 	public String displayBlock() {
 		String output = "";
 		for(int i=0; i<block.size(); i++) {
-			output+= "0x" + Integer.toHexString(block.get(i)) + " ";
+			if(block.get(i)<16) {
+				output+= "0x0" + Integer.toHexString(block.get(i)) + " ";
+			}
+			else {
+				output+= "0x" + Integer.toHexString(block.get(i)) + " ";
+			}
 		}
 		return output;
 	}

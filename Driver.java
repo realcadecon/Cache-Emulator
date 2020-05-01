@@ -43,7 +43,7 @@ public class Driver {
 			goodVal = false;
 			while(!goodVal) {
 				if(!temp.equals("cache-read") && !temp.equals("cache-write") && !temp.equals("cache-flush") && !temp.equals("cache-view") && !temp.equals("memory-view") 
-				&& !temp.equals("cache-dump") && !temp.equals(" memory-dump") && !temp.equals("quit")) {
+				&& !temp.equals("cache-dump") && !temp.equals("memory-dump") && !temp.equals("quit")) {
 					System.out.println("Error: No such command. Please check spelling and try again.");
 					temp = util.getInput();
 				}

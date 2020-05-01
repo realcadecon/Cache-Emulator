@@ -29,6 +29,9 @@ public class RAM {
 	}
 
 	public void setByte(int adrs, String data) {
+		if(data.length()==1) {
+			data = "0" + data;
+		}
 		memory.set(adrs, data);
 	}
 
