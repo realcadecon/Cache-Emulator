@@ -96,9 +96,9 @@ public class Cache {
 		while (binAddress.length() < Cache.ADDRESS_SIZE) {		//formats address in order to add tag bits, block offset bits and set index
 			binAddress = "0" + binAddress;	
 		}
-		System.out.println("bin address: "+binAddress);
-		System.out.println("blockOffset Start: "+blockOffsetStartingBit);
-		System.out.println("setIndex Start: "+setIndexStartingBit);
+//		System.out.println("bin address: "+binAddress);
+//		System.out.println("blockOffset Start: "+blockOffsetStartingBit);
+//		System.out.println("setIndex Start: "+setIndexStartingBit);
 		int blockOffset;	//integer value of block offset
 		if(blockOffsetStartingBit==8) {
 			blockOffset = 0; //sets block offset bits

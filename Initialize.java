@@ -166,6 +166,7 @@ public class Initialize {
 		//create and return configured cache
 		Cache cache = new Cache(cacheSize, dataBlockSize, associativity, replacementPolicy, 
 				writePolicy, missPolicy);
+		System.out.println("cache successfully configured!");
 		return cache;
 	}
 	
