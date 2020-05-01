@@ -15,4 +15,3 @@
 * To compile the program through the command line/terminal, type "javac <filename.java>" for each file, or "javac <list of filenames separated by SPACE>".
 ### Running the Progam:
  * To run the compiled program, type "java Driver <input-file>".
-![Code Portion](//enter picture link here)
