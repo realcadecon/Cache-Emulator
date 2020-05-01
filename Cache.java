@@ -301,7 +301,7 @@ public class Cache {
 				//<valid bit 0/1> <dirty bit 0/1> <tag in 2 digit hexadecimal> <hex data inside block>
 				output += data.get(set).get(line).getValid() + " " 
 						+ data.get(set).get(line).getDirtyBit() + " "
-						+ data.get(set).get(line).getTagHex() + " "
+						+ "0x"+data.get(set).get(line).getTagHex() + " "
 						+ data.get(set).get(line).displayBlock() + "\n";
 			}
 		}
@@ -411,7 +411,7 @@ class Line {
 	public String displayBlock() {
 		String output = "";
 		for(int i=0; i<block.size(); i++) {
-			output+= Integer.toHexString(block.get(i)) + " ";
+			output+= "0x" + Integer.toHexString(block.get(i)) + " ";
 		}
 		return output;
 	}
