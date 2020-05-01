@@ -116,6 +116,7 @@ public class Cache {
 			if (data.get(setIndex).get(i).getValid() == 1)	//checks valid bit for given line in a set
 				if(data.get(setIndex).get(i).getTag() == tag) {	//checks if tag bits match
 					hit = true;
+					this.numHits++;
 					requestedData = data.get(setIndex).get(i).getBlock().get(blockOffset);
 					break;
 				}
@@ -124,6 +125,7 @@ public class Cache {
 		// Cache miss
 		int lineIndexReplacement = 0;
 		if(!hit) {
+			this.numMisses++;
 			// generating address to retrieve data from memory (replace block offset bits with 0)
 			String binBlockRetrievalAddress = binAddress.substring(0, this.blockOffsetStartingBit);
 			while(binBlockRetrievalAddress.length() < Cache.ADDRESS_SIZE) {
@@ -149,7 +151,7 @@ public class Cache {
 					}
 					data.get(setIndex).get(0).setDirtyBit(0);
 				}
-				System.out.println("dataBlock Size: "+dataBlockSize);	//debugging
+				//System.out.println("dataBlock Size: "+dataBlockSize);	//debugging
 				for(int i = 0; i < this.dataBlockSize; i++) {
 					data.get(setIndex).get(0).getBlock().set(i, Integer.parseInt(ram.getByte(blockRetrievalAddress + i), 16));
 				}
@@ -257,18 +259,150 @@ public class Cache {
 
 		boolean hit = false;
 		int requestedLine = 0;
+		// Searching for matching tag
 		for (int i = 0; i < this.associativity; i++) {
-			if(data.get(setIndex).get(i).getTag() == tag) {
-				hit = true;
-				requestedLine = i;
-				data.get(setIndex).get(i).getBlock().set(blockOffset, Integer.parseInt(hexValue.substring(2), 16));
-				if(this.writePolicy == 1) {
-					ram.setByte(address, hexValue);
+			if(data.get(setIndex).get(i).getValid() == 1) {
+				if(data.get(setIndex).get(i).getTag() == tag) {
+					this.numHits++;
+					hit = true;
+					requestedLine = i;
+					data.get(setIndex).get(i).getBlock().set(blockOffset, Integer.parseInt(hexValue.substring(2), 16));
+					// Write-through policy
+					if(this.writePolicy == 1) {
+						ram.setByte(address, hexValue);
+					}
+					// Write-back policy
+					else {
+						data.get(setIndex).get(i).setDirtyBit(1);
+					}
 				}
 			}
 		}
 
+		// write miss
+		int lineIndexReplacement = -1;
+		if(!hit) {
+			this.numMisses++;
+			ram.setByte(address, hexValue);
+			// Write-Allocate policy
+			if(this.missPolicy == 1) {
+				String binBlockRetrievalAddress = binAddress.substring(0, this.blockOffsetStartingBit);
+				while(binBlockRetrievalAddress.length() < Cache.ADDRESS_SIZE) {
+					binBlockRetrievalAddress = binBlockRetrievalAddress + "0";
+				}
+				int blockRetrievalAddress = Integer.parseInt(binBlockRetrievalAddress, 2);
 
+				if(this.associativity == 1) {
+					// update memory if dirty bit set
+					if (data.get(setIndex).get(0).getDirtyBit() == 1) {
+						int evictionTag = data.get(setIndex).get(0).getTag();
+						String binEvictionTag = Integer.toBinaryString(evictionTag);
+						while(binEvictionTag.length() < this.setIndexStartingBit) {
+							binEvictionTag = "0" + binEvictionTag;
+						}
+						String binEvictionAddress = binEvictionTag + binAddress.substring(this.setIndexStartingBit, this.blockOffsetStartingBit);
+						while(binEvictionAddress.length() < Cache.ADDRESS_SIZE) {
+							binEvictionAddress = binEvictionAddress + "0";
+						}
+						int evictionAddress = Integer.parseInt(binEvictionAddress, 2);
+						for(int i = 0; i < this.dataBlockSize; i++) {
+							ram.setByte(evictionAddress + i, Integer.toHexString(data.get(setIndex).get(0).getBlock().get(i)));
+						}
+						data.get(setIndex).get(0).setDirtyBit(0);
+					}
+					// move updated memory to cache
+					lineIndexReplacement = 0;
+					for(int i = 0; i < this.dataBlockSize; i++) {
+						data.get(setIndex).get(0).getBlock().set(i, Integer.parseInt(ram.getByte(blockRetrievalAddress + i), 16));
+					}
+					data.get(setIndex).get(0).setTag(tag);
+					data.get(setIndex).get(0).setValid(1);
+				}
+				// Cache miss handling for non-1-way associative
+				else if(this.replacementPolicy == 1) { // Random Replacement
+					lineIndexReplacement = -1;
+					for(int i = 0; i < this.associativity; i++) {
+						if(data.get(setIndex).get(i).getValid() == 0) {
+							lineIndexReplacement = i;
+							break;
+						}
+					}
+					if(lineIndexReplacement == -1) {
+						lineIndexReplacement = (int) (this.associativity * Math.random());
+						if (data.get(setIndex).get(lineIndexReplacement).getDirtyBit() == 1) {
+							int evictionTag = data.get(setIndex).get(lineIndexReplacement).getTag();
+							String binEvictionTag = Integer.toBinaryString(evictionTag);
+							while(binEvictionTag.length() < this.setIndexStartingBit) {
+								binEvictionTag = "0" + binEvictionTag;
+							}
+							String binEvictionAddress = binEvictionTag + binAddress.substring(this.setIndexStartingBit, this.blockOffsetStartingBit);
+							while(binEvictionAddress.length() < Cache.ADDRESS_SIZE) {
+								binEvictionAddress = binEvictionAddress + "0";
+							}
+							int evictionAddress = Integer.parseInt(binEvictionAddress, 2);
+							for(int i = 0; i < this.dataBlockSize; i++) {
+								ram.setByte(evictionAddress + i, Integer.toHexString(data.get(setIndex).get(lineIndexReplacement).getBlock().get(i)));
+							}
+							data.get(setIndex).get(lineIndexReplacement).setDirtyBit(0);
+						}
+					}
+					for(int i = 0; i < this.dataBlockSize; i++) {
+						data.get(setIndex).get(lineIndexReplacement).getBlock().set(i, Integer.parseInt(ram.getByte(blockRetrievalAddress + i), 16));
+					}
+					data.get(setIndex).get(lineIndexReplacement).setTag(tag);
+					data.get(setIndex).get(lineIndexReplacement).setValid(1);
+				}
+				else if(this.replacementPolicy == 2) { // LRU Replacement Policy
+					lineIndexReplacement = -1;
+					for(int i = 0; i < this.associativity; i++) {
+						if(data.get(setIndex).get(i).getValid() == 0) {
+							lineIndexReplacement = i;
+							break;
+						}
+					}
+					if (lineIndexReplacement == -1) {
+						if(this.associativity == 2) { // 2-way Associative
+							if(lru.get(setIndex) == 0) {
+								lineIndexReplacement = 0;
+								lru.set(setIndex, 1);
+							}
+							else {
+								lineIndexReplacement = 1;
+								lru.set(setIndex, 0);
+							}
+						}
+						else { // 4-way associative
+							String order = Integer.toString(lru.get(setIndex), 4);
+							lineIndexReplacement = ((int) (order.charAt(0))) - 48;
+							order = order.substring(1, 4) + order.substring(0, 1);
+							lru.set(setIndex, Integer.parseInt(order, 4));
+						}
+						if (data.get(setIndex).get(lineIndexReplacement).getDirtyBit() == 1) {
+							int evictionTag = data.get(setIndex).get(lineIndexReplacement).getTag();
+							String binEvictionTag = Integer.toBinaryString(evictionTag);
+							while(binEvictionTag.length() < this.setIndexStartingBit) {
+								binEvictionTag = "0" + binEvictionTag;
+							}
+							String binEvictionAddress = binEvictionTag + binAddress.substring(this.setIndexStartingBit, this.blockOffsetStartingBit);
+							while(binEvictionAddress.length() < Cache.ADDRESS_SIZE) {
+								binEvictionAddress = binEvictionAddress + "0";
+							}
+							int evictionAddress = Integer.parseInt(binEvictionAddress, 2);
+							for(int i = 0; i < this.dataBlockSize; i++) {
+								ram.setByte(evictionAddress + i, Integer.toHexString(data.get(setIndex).get(lineIndexReplacement).getBlock().get(i)));
+							}
+							data.get(setIndex).get(lineIndexReplacement).setDirtyBit(0);
+						}
+					}
+					for(int i = 0; i < this.dataBlockSize; i++) {
+						data.get(setIndex).get(lineIndexReplacement).getBlock().set(i, Integer.parseInt(ram.getByte(blockRetrievalAddress + i), 16));
+					}
+					data.get(setIndex).get(lineIndexReplacement).setTag(tag);
+					data.get(setIndex).get(lineIndexReplacement).setValid(1);
+				}
+			}
+			System.out.println("set: " + setIndex + "\ntag: " + tag + "\nhit: " + (hit ? "yes":"no") + "\neviction_line: " + lineIndexReplacement + "\nram_address: " + hexAddress + "\ndata: " + hexValue); //format output
+		}
 	}
 	
 	public void cacheFlush() {
