@@ -96,9 +96,9 @@ public class Cache {
 		while (binAddress.length() < Cache.ADDRESS_SIZE) {		//formats address in order to add tag bits, block offset bits and set index
 			binAddress = "0" + binAddress;	
 		}
-		System.out.println("bin address: "+binAddress);
-		System.out.println("blockOffset Start: "+blockOffsetStartingBit);
-		System.out.println("setIndex Start: "+setIndexStartingBit);
+//		System.out.println("bin address: "+binAddress);
+//		System.out.println("blockOffset Start: "+blockOffsetStartingBit);
+//		System.out.println("setIndex Start: "+setIndexStartingBit);
 		int blockOffset;	//integer value of block offset
 		if(blockOffsetStartingBit==8) {
 			blockOffset = 0; //sets block offset bits
@@ -461,7 +461,7 @@ public class Cache {
 				//<valid bit 0/1> <dirty bit 0/1> <tag in 2 digit hexadecimal> <hex data inside block>
 				output += data.get(set).get(line).getValid() + " " 
 						+ data.get(set).get(line).getDirtyBit() + " "
-						+ data.get(set).get(line).getTagHex() + " "
+						+ "0x"+data.get(set).get(line).getTagHex() + " "
 						+ data.get(set).get(line).displayBlock() + "\n";
 			}
 		}
@@ -571,7 +571,7 @@ class Line {
 	public String displayBlock() {
 		String output = "";
 		for(int i=0; i<block.size(); i++) {
-			output+= Integer.toHexString(block.get(i)) + " ";
+			output+= "0x" + Integer.toHexString(block.get(i)) + " ";
 		}
 		return output;
 	}
