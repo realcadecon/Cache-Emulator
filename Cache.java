@@ -118,12 +118,25 @@ public class Cache {
 					hit = true;
 					this.numHits++;
 					requestedData = data.get(setIndex).get(i).getBlock().get(blockOffset);
+					if(this.associativity == 2 && this.replacementPolicy == 2) {
+						if(i == 0) {
+							lru.set(setIndex, 1);
+						}
+						else {
+							lru.set(setIndex, 0);
+						}
+					}
+					else if (this.associativity == 4 && this.replacementPolicy == 2){ 
+						String order = Integer.toString(lru.get(setIndex), 4);
+						order = order.substring(0, order.indexOf("" + i)) + order.substring(order.indexOf("" + i) + 1) + i;
+						lru.set(setIndex, Integer.parseInt(order, 4));
+					}
 					break;
 				}
 		}
 
 		// Cache miss
-		int lineIndexReplacement = 0;
+		int lineIndexReplacement = -1;
 		if(!hit) {
 			this.numMisses++;
 			// generating address to retrieve data from memory (replace block offset bits with 0)
@@ -258,14 +271,13 @@ public class Cache {
 		int tag = Integer.parseInt(binAddress.substring(0, this.setIndexStartingBit), 2); //sets tagBits
 
 		boolean hit = false;
-		int requestedLine = 0;
+		int lineIndexReplacement = -1;
 		// Searching for matching tag
 		for (int i = 0; i < this.associativity; i++) {
 			if(data.get(setIndex).get(i).getValid() == 1) {
 				if(data.get(setIndex).get(i).getTag() == tag) {
 					this.numHits++;
 					hit = true;
-					requestedLine = i;
 					data.get(setIndex).get(i).getBlock().set(blockOffset, Integer.parseInt(hexValue.substring(2), 16));
 					// Write-through policy
 					if(this.writePolicy == 1) {
@@ -275,12 +287,26 @@ public class Cache {
 					else {
 						data.get(setIndex).get(i).setDirtyBit(1);
 					}
+					if(this.associativity == 2 && this.replacementPolicy == 2) {
+						if(i == 0) {
+							lru.set(setIndex, 1);
+						}
+						else {
+							lru.set(setIndex, 0);
+						}
+					}
+					else if (this.associativity == 4 && this.replacementPolicy == 2){ 
+						String order = Integer.toString(lru.get(setIndex), 4);
+						order = order.substring(0, order.indexOf("" + i)) + order.substring(order.indexOf("" + i) + 1) + i;
+						lru.set(setIndex, Integer.parseInt(order, 4));
+					}
+					break;
 				}
 			}
 		}
 
 		// write miss
-		int lineIndexReplacement = -1;
+		
 		if(!hit) {
 			this.numMisses++;
 			ram.setByte(address, hexValue);
