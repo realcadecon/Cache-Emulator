@@ -57,7 +57,6 @@ public class Driver {
 				case "cache-read":
 					System.out.print("Enter hex address (30 decimal == 0x1e hex): ");
 					String hexAddress1 = util.getInput();
-					System.out.println(hexAddress1.substring(2));
 					cache.cacheRead(hexAddress1);
 					break;
 				case "cache-write":

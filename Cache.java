@@ -96,12 +96,12 @@ public class Cache {
 		while (binAddress.length() < Cache.ADDRESS_SIZE) {		//formats address in order to add tag bits, block offset bits and set index
 			binAddress = "0" + binAddress;	
 		}
-		System.out.println(binAddress);
-		System.out.println(blockOffsetStartingBit);
-		System.out.println(setIndexStartingBit);
+		System.out.println("bin address: "+binAddress);
+		System.out.println("blockOffset Start: "+blockOffsetStartingBit);
+		System.out.println("setIndex Start: "+setIndexStartingBit);
 		int blockOffset;
 		if(blockOffsetStartingBit==8) {
-			blockOffset = 0; //sets block offset bits
+			blockOffset = 8; //sets block offset bits
 		}
 		else{
 			blockOffset = Integer.parseInt(binAddress.substring(this.blockOffsetStartingBit), 2); //sets block offset bits
@@ -149,6 +149,7 @@ public class Cache {
 					}
 					data.get(setIndex).get(0).setDirtyBit(0);
 				}
+				System.out.println("dataBlock Size: "+dataBlockSize);	//debugging
 				for(int i = 0; i < this.dataBlockSize; i++) {
 					data.get(setIndex).get(0).getBlock().set(i, Integer.parseInt(ram.getByte(blockRetrievalAddress + i), 16));
 				}
