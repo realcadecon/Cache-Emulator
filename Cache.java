@@ -274,9 +274,18 @@ public class Cache {
 		else{
 			blockOffset = Integer.parseInt(binAddress.substring(this.blockOffsetStartingBit), 2); //sets block offset bits
 		}
-		int setIndex = Integer.parseInt(binAddress.substring(this.setIndexStartingBit, this.blockOffsetStartingBit), 2); //sets setIndex
+//		System.out.println(binAddress);
+//		System.out.println("setIndexStartBit: "+setIndexStartingBit);
+//		System.out.println("blockOffsetStartBit: "+blockOffsetStartingBit);
+//		System.out.println(binAddress.substring(this.setIndexStartingBit, this.blockOffsetStartingBit));
+		int setIndex;
+		if(setIndexStartingBit==blockOffsetStartingBit) {
+			setIndex = 0;
+		}
+		else {
+			setIndex = Integer.parseInt(binAddress.substring(this.setIndexStartingBit, this.blockOffsetStartingBit), 2); //sets setIndex
+		}
 		int tag = Integer.parseInt(binAddress.substring(0, this.setIndexStartingBit), 2); //sets tagBits
-
 		boolean hit = false;
 		int lineIndexReplacement = -1;
 		// Searching for matching tag
@@ -316,7 +325,7 @@ public class Cache {
 		
 		if(!hit) {
 			this.numMisses++;
-			ram.setByte(address, hexValue);
+			ram.setByte(address, hexValue.substring(2));
 			// Write-Allocate policy
 			if(this.missPolicy == 1) {
 				String binBlockRetrievalAddress = binAddress.substring(0, this.blockOffsetStartingBit);
@@ -379,6 +388,7 @@ public class Cache {
 							data.get(setIndex).get(lineIndexReplacement).setDirtyBit(0);
 						}
 					}
+					//System.out.println(ram.getByte(blockRetrievalAddress)); // at 0
 					for(int i = 0; i < this.dataBlockSize; i++) {
 						data.get(setIndex).get(lineIndexReplacement).getBlock().set(i, Integer.parseInt(ram.getByte(blockRetrievalAddress + i), 16));
 					}

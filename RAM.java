@@ -41,5 +41,4 @@ public class RAM {
 		return output;
 	}
 	
-	
 }

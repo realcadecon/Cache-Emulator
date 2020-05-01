@@ -55,14 +55,11 @@ public class Driver {
 			
 			switch(command){
 				case "cache-read":
-					System.out.print("Enter hex address (30 decimal == 0x1e hex): ");
 					String hexAddress1 = util.getInput();
 					cache.cacheRead(hexAddress1);
 					break;
 				case "cache-write":
-					System.out.print("Enter hex address (30 decimal == 0x1e hex): ");
 					String hexAddress2 = util.getInput();
-					System.out.print("Enter hex value (30 decimal == 0x1e hex): ");
 					String hexVal = util.getInput();
 					cache.cacheWrite(hexAddress2, hexVal);
 					break;
