@@ -99,9 +99,9 @@ public class Cache {
 		System.out.println("bin address: "+binAddress);
 		System.out.println("blockOffset Start: "+blockOffsetStartingBit);
 		System.out.println("setIndex Start: "+setIndexStartingBit);
-		int blockOffset;
+		int blockOffset;	//integer value of block offset
 		if(blockOffsetStartingBit==8) {
-			blockOffset = 8; //sets block offset bits
+			blockOffset = 0; //sets block offset bits
 		}
 		else{
 			blockOffset = Integer.parseInt(binAddress.substring(this.blockOffsetStartingBit), 2); //sets block offset bits
